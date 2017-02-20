@@ -24,11 +24,11 @@ var view = {
 var model = {
     boardSize: 7,
     numShips: 3,
-    shipsSunk: 0,
-    shipLength: 3,
-    ships: [{ locations: ["06", "16", "26"], hits: ["", "", ""] },
-        { locations: ["24", "34", "44"], hits: ["", "", ""] },
-        { locations: ["10", "11", "12"], hits: ["", "", ""] }],
+    shipsSunk: 0, // переменная количество потопленных кораблей
+    shipLength: 3, // длина кораблей
+    ships: [{ locations: [0, 0, 0], hits: ["", "", ""] },
+            { locations: [0, 0, 0], hits: ["", "", ""] },
+            { locations: [0, 0, 0], hits: ["", "", ""] }],
     fire: function(guess) { // метод fire перебирает все корабли и проверяет попадание
         // guess - попытка выстрела
         for ( var i=0; i < this.numShips; i++ ) {
@@ -56,6 +56,50 @@ var model = {
                 return false;
             }
             return true;
+        }
+    },
+    generateShipLocations: function() {
+        var locations;
+        for (var i=0; i < this.numShips; i++) {
+            do {
+                locations = this.generateShip();
+            } while (this.collision(locations));
+                this.ships[i].locations = locations;
+        }
+    },
+    generateShip: function() {
+        var direction = Math.floor(Math.random() * 2);
+        var row, col;
+        if ( direction === 1 ) {
+            // генерация вертик
+            row = Math.floor(Math.random() * this.boardSize);
+            col = Math.floor(Math.random() * (this.boardSize - this.shipLength));
+
+        } else {
+            // генерация горизонт
+            row = Math.floor(Math.random() * (this.boardSize - this.shipLength));
+            col = Math.floor(Math.random() * this.boardSize);
+        }
+        var newShipLocations = [];
+        for (var i=0; i < 3; i++) {
+            if (direction === 1) {
+                newShipLocations.push(row + "" + (col + i));
+            } else {
+                newShipLocations.push((row + i) + "" + col);
+            }
+        }
+        //console.log(newShipLocations);
+
+        return newShipLocations;
+    },
+    collision: function(locations) {
+        for (var i = 0; i < this.numShips; i++) {
+            var ship = model.ships[i];
+            for (var j = 0; j < locations.length; j++) {
+                if (ship.locations.indexOf(locations[j]) >= 0) {
+                    return true;
+                }
+            }
         }
     }
 }
@@ -100,6 +144,8 @@ function init() {
     fireButton.onclick = handleFireButton;
     var guessInput = document.getElementById("guessInput");
     guessInput.onkeypress = handleKeyPress;
+
+    model.generateShipLocations();
 }
 function handleFireButton() {
     var guessInput = document.getElementById("guessInput");
