@@ -26,7 +26,8 @@ var model = {
     numShips: 3,
     shipsSunk: 0, // переменная количество потопленных кораблей
     shipLength: 3, // длина кораблей
-    ships: [{ locations: [0, 0, 0], hits: ["", "", ""] },
+    ships:
+            [{ locations: [0, 0, 0], hits: ["", "", ""] },
             { locations: [0, 0, 0], hits: ["", "", ""] },
             { locations: [0, 0, 0], hits: ["", "", ""] }],
     fire: function(guess) { // метод fire перебирает все корабли и проверяет попадание
@@ -109,6 +110,7 @@ var controller = {
     processGuess: function(guess) {
         var location = parseGuess(guess);
         if (location) {
+
             this.guesses++;
             var hit = model.fire(location);
             if (hit && model.shipsSunk === model.numShips) {
@@ -127,6 +129,7 @@ function parseGuess(guess) {
         var row = alphabet.indexOf(firstChar);
         }
     var column = guess.charAt(1);
+
     if ( isNaN(row) || isNaN(column) ) {
         alert("Oops, that isn't on the board.");
     } else if ( row < 0 || row >= model.boardSize || column < 0 || column >= model.boardSize ) {
